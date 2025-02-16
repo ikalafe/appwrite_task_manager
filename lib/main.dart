@@ -95,7 +95,19 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  
+  Future<List<Document>> getTask() async {
+    try {
+      final response = await widget.database.listDocuments(
+        databaseId: AppConfig.databaseId,
+        collectionId: AppConfig.databaseCollectionId,
+      );
+
+      return response.documents;
+    } on AppwriteException catch (e) {
+      print(e);
+      return [];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
