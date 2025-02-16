@@ -47,6 +47,17 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    fetchTasks();
+  }
+
+  Future<void> fetchTasks() async {
+    tasks = await getTask();
+    setState(() {});
+  }
+
   Future<void> login(String email, String password) async {
     await widget.account.createEmailPasswordSession(
       email: email,
@@ -133,7 +144,20 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  
+  Future<bool> deleteTask(String taskID) async {
+    try {
+      await widget.database.deleteDocument(
+        databaseId: AppConfig.databaseId,
+        collectionId: AppConfig.databaseCollectionId,
+        documentId: taskID,
+      );
+
+      return true;
+    } on AppwriteException catch (e) {
+      print(e);
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
