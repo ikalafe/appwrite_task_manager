@@ -39,7 +39,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   models.User? loggedInUser;
-  List<Document> task = [];
+  List<Document> tasks = [];
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage> {
       );
 
       setState(() {
-        task.add(newTask);
+        tasks.add(newTask);
       });
 
       return true;
@@ -108,6 +108,32 @@ class _HomePageState extends State<HomePage> {
       return [];
     }
   }
+
+  Future<bool> updateTask(String taskID, bool completed) async {
+    try {
+      final updatedTask = await widget.database.updateDocument(
+        databaseId: AppConfig.databaseId,
+        collectionId: AppConfig.databaseCollectionId,
+        documentId: taskID,
+        data: {"completed": completed},
+      );
+
+      final index = tasks.indexWhere((task) => task.$id == taskID);
+
+      if (index != -1) {
+        setState(() {
+          tasks[index] = updatedTask;
+        });
+      }
+
+      return true;
+    } on AppwriteException catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  
 
   @override
   Widget build(BuildContext context) {
